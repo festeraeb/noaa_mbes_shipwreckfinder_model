@@ -1,0 +1,14 @@
+{
+  "model": "unet_hillshade",
+  "input_channels": 2,
+  "input_size": 416,
+  "channel_order": [
+    "normalized_depth",
+    "hillshade_0_1"
+  ],
+  "hillshade_az_deg": 315,
+  "hillshade_alt_deg": 45,
+  "chip_size_m": 200,
+  "weights_source": "unetaux_rosy-elevator-246_best.pt",
+  "notes": "Tuned for NOAA MBES bathymetry with dual-channel normalized depth and 315\u00b0/45\u00b0 hillshade relief."
+}
