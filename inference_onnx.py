@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-\"\"\"
+"""
 Enhanced NOAA MBES ShipwreckFinder ONNX Inference Pipeline
 Computes dual-channel normalized depth + 315°/45° hillshade relief
 and performs accelerated ONNX inference.
-\"\"\"
+"""
 
 import argparse
 import json
@@ -27,7 +27,7 @@ def prepare_chip(patch, target_size=416):
     if h != target_size or w != target_size:
         pad_h = max(0, target_size - h)
         pad_w = max(0, target_size - w)
-        patch = np.pad(patch[:target_size, :target_size], ((0, pad_h), (0, pad_w)), mode=\"edge\")
+        patch = np.pad(patch[:target_size, :target_size], ((0, pad_h), (0, pad_w)), mode="edge")
         
     patch = np.nan_to_num(patch, nan=float(np.nanmean(patch)) if np.isnan(patch).any() else 0.0)
     p_min, p_max = patch.min(), patch.max()
@@ -38,17 +38,17 @@ def prepare_chip(patch, target_size=416):
     return np.stack([norm_depth, hillshade], axis=0)[np.newaxis, ...].astype(np.float32)
 
 def main():
-    parser = argparse.ArgumentParser(description=\"Run Enhanced ONNX ShipwreckFinder\")
-    parser.add_argument(\"--model\", default=\"models/unet_hillshade.onnx\", help=\"Path to ONNX weights\")
-    parser.add_argument(\"--npy\", help=\"Path to 2D numpy elevation array chip\")
+    parser = argparse.ArgumentParser(description="Run Enhanced ONNX ShipwreckFinder")
+    parser.add_argument("--model", default="models/unet_hillshade.onnx", help="Path to ONNX weights")
+    parser.add_argument("--npy", help="Path to 2D numpy elevation array chip")
     args = parser.parse_args()
 
     if not os.path.exists(args.model):
-        print(f\"Model not found at {args.model}. Download weights from release assets.\")
+        print(f"Model not found at {args.model}. Download weights from release assets.")
         return
 
-    session = ort.InferenceSession(args.model, providers=[\"CPUExecutionProvider\"])
-    print(f\"Loaded ONNX session: {args.model}\")
+    session = ort.InferenceSession(args.model, providers=["CPUExecutionProvider"])
+    print(f"Loaded ONNX session: {args.model}")
     
     if args.npy and os.path.exists(args.npy):
         patch = np.load(args.npy)
@@ -59,8 +59,8 @@ def main():
         exp_logits = np.exp(logits - np.max(logits, axis=0, keepdims=True))
         probs = exp_logits / np.sum(exp_logits, axis=0, keepdims=True)
         ship_prob = probs[1]
-        print(f\"Max Shipwreck Probability: {float(np.max(ship_prob)):.4f}\")
-        print(f\"Active Shipwreck Pixels (P > 0.5): {int(np.sum(ship_prob > 0.5))}\")
+        print(f"Max Shipwreck Probability: {float(np.max(ship_prob)):.4f}")
+        print(f"Active Shipwreck Pixels (P > 0.5): {int(np.sum(ship_prob > 0.5))}")
 
-if __name__ == \"__main__\":
+if __name__ == "__main__":
     main()
