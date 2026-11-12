@@ -7,6 +7,8 @@ This contribution provides:
 
 ### Real Soundings Benchmark Results (Lake Michigan H13941)
 
+> **Not re-run after a preprocessing fix.** The table below was produced before `inference_onnx.py` was corrected to prepare chips the way the training loader does (hillshade convention, resampling, no-data handling). The probabilities and the finding under it need to be measured again before they are relied on.
+
 | Detection ID | Coordinates (Lat, Lon) | Anomaly Type | Height Above Floor | UNet Hillshade Max Prob | False Positive Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `H13941_phys000` | 41.7299, -86.9142 | Physical Wreck Target | **+3.45m** | High relief | Detected |
